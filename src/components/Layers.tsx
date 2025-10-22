@@ -19,8 +19,8 @@ const Layers = ({ timeline }: { timeline: gsap.core.Timeline }) => {
 
     const main = document.querySelector("main");
 
-    console.log("Layers:", layers);
-    console.log("main:", main);
+    // console.log("Layers:", layers);
+    // console.log("main:", main);
 
 
     if (!layers) {

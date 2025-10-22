@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { images } from "../assets/img";
 import Layers from "./Layers";
 import gsap from "gsap";
+import { pickNNumbersFromRange } from "../utils/nNumbers";
+import EarthCanvas from "./ModelScene";
 
 const menus = [
   { title: "Mr.Chedda the Mouse", subtitle: "Have a gouda day!" },
@@ -40,26 +42,33 @@ function Menu({ onClick }: { onClick: () => void }) {
 const Hero = () => {
   const tl = useRef<gsap.core.Timeline>(gsap.timeline({ paused: true }));
 
+  const nPics = 6;
+  const selectedIndexes = pickNNumbersFromRange(nPics, images.length - 1 )
+  console.log(selectedIndexes)
+
   function handleClick() {
     tl.current?.restart();
   }
 
+  let counter = 6;
+
   return (
     <div className="content">
       <div className="grid">
-        {images.map((image) => {
-          const index = images.indexOf(image);
-          console.log(image, images.indexOf(image));
-          console.log(`grid__item--${index}`);
+        {selectedIndexes.map((index) => {
+          const image = images.at(index)
+          counter--
           return (
             <div
               key={index}
-              className={`grid__item grid__item--${index}`}
+              className={`grid__item grid__item--${counter}`}
               style={{ backgroundImage: `url(${image})` }}
             ></div>
           );
         })}
       </div>
+
+      <EarthCanvas/>
 
       <Menu onClick={handleClick} />
 
