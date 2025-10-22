@@ -3,7 +3,6 @@ import { images } from "../assets/img";
 import Layers from "./Layers";
 import gsap from "gsap";
 import { pickNNumbersFromRange } from "../utils/nNumbers";
-import EarthCanvas from "./ModelScene";
 
 const menus = [
   { title: "Mr.Chedda the Mouse", subtitle: "Have a gouda day!" },
@@ -67,9 +66,6 @@ const Hero = () => {
           );
         })}
       </div>
-
-      <EarthCanvas/>
-
       <Menu onClick={handleClick} />
 
       <Layers timeline={tl.current} />
