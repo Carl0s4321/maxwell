@@ -26,3 +26,75 @@ body {
 	--cursor-fill: none;
 	--cursor-stroke-width: 1px;
 }
+
+a {
+  text-decoration: none;
+  color: var(--color-link);
+  outline: none;
+}
+
+a:hover,
+a:focus {
+  color: var(--color-link-hover);
+  outline: none;
+}
+
+
+.frame {
+  padding: 3rem 5vw;
+  text-align: center;
+  position: relative;
+  z-index: 1000;
+}
+
+.frame__title {
+  font-size: 1rem;
+  margin: 0 0 1rem;
+  font-weight: 300;
+}
+
+.frame__links {
+  display: inline;
+}
+
+.frame__links a:not(:last-child) {
+  margin-right: 1rem;
+}
+
+
+@media screen and (min-width: 53em) {
+  .message {
+      display: none;
+  }
+
+  .frame {
+      display: grid;
+      position: absolute;
+      width: 100%;
+      padding: 4rem;
+      pointer-events: none;
+      grid-template-columns: auto auto 1fr;
+      grid-template-rows: auto;
+  }
+
+  .frame__title {
+      margin: 0 4rem 0 0;
+  }
+
+  .frame__links {
+      padding: 0;
+  }
+
+  .frame a {
+      pointer-events: auto;
+  }
+  .content {
+      height: 100vh;
+  }
+  .grid {
+      width: 80vw;
+  }
+  .menu {
+      width: 110vw;
+  }
+}
