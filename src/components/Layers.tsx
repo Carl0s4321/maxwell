@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { images } from "../assets/img";
+import { maxwellImg } from "../assets/img";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
@@ -81,7 +81,7 @@ const Layers = ({ timeline }: { timeline: gsap.core.Timeline }) => {
 
   return (
     <div className="layers">
-      {images.map((image) => (
+      {maxwellImg.map((image) => (
         <div key={image} className="layers__item">
           <div
             className={"layers__item-img"}

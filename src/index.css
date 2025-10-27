@@ -8,6 +8,11 @@
     font-size: 14px;
 }
 
+body,html{
+    /* so it doesnt jump when we overscroll */
+    overscroll-behavior: none;
+}
+
 body {
     margin: 0;
     --color-text: #644B47;

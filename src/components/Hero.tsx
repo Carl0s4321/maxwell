@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import { images } from "../assets/img";
+import { imgSections, maxwellImg, meowlImg } from "../assets/img";
 import Layers from "./Layers";
 import gsap from "gsap";
 import { pickNNumbersFromRange } from "../utils/nNumbers";
+import * as THREE from "three";
+import { useThree } from "@react-three/fiber";
 
 const menus = [
   { title: "Mr.Chedda the Mouse", subtitle: "Have a gouda day!" },
@@ -42,8 +44,8 @@ const Hero = () => {
   const tl = useRef<gsap.core.Timeline>(gsap.timeline({ paused: true }));
 
   const nPics = 6;
-  const selectedIndexes = pickNNumbersFromRange(nPics, images.length - 1 )
-  console.log(selectedIndexes)
+  const selectedIndexes = pickNNumbersFromRange(nPics, maxwellImg.length - 1);
+  console.log(selectedIndexes);
 
   function handleClick() {
     tl.current?.restart();
@@ -56,8 +58,8 @@ const Hero = () => {
       <div className="grid">
         {/* GRID ITEMS */}
         {selectedIndexes.map((index) => {
-          const image = images.at(index)
-          counter--
+          const image = maxwellImg.at(index);
+          counter--;
           return (
             <div
               key={index}
