@@ -234,7 +234,7 @@ a:focus {
 }
 
 .intro .menu__item--current::before {                
-    content: '01';
+    content: attr(data-index);
     position: absolute;
     bottom: 110%;
     color: var(--color-title);

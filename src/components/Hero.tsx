@@ -54,6 +54,7 @@ const Hero = () => {
   return (
     <div className="content">
       <div className="grid">
+        {/* GRID ITEMS */}
         {selectedIndexes.map((index) => {
           const image = images.at(index)
           counter--

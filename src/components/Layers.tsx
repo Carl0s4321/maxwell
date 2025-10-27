@@ -4,9 +4,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
 const Layers = ({ timeline }: { timeline: gsap.core.Timeline }) => {
-
   useGSAP(() => {
-
     const layers = [...document.querySelectorAll(".layers__item")].map((el) => {
       // console.log("el", el);
       return {
@@ -21,7 +19,6 @@ const Layers = ({ timeline }: { timeline: gsap.core.Timeline }) => {
 
     // console.log("Layers:", layers);
     // console.log("main:", main);
-
 
     if (!layers) {
       console.log("no layers");
@@ -46,6 +43,7 @@ const Layers = ({ timeline }: { timeline: gsap.core.Timeline }) => {
     });
 
     timeline
+      // adding a label so the gridItems start animation right after halfway point
       .addLabel(
         "halfway",
         options.panelDelay * (layers.length - 1) + options.duration
@@ -57,6 +55,7 @@ const Layers = ({ timeline }: { timeline: gsap.core.Timeline }) => {
         // @ts-ignore
         main.classList.remove("intro");
       })
+      // moving the layer image downwards so it looks like itll stay still (kinda like an invis box sliding up)
       .to(
         [layers.at(-1)!.el, layers.at(-1)!.image],
         {
@@ -66,6 +65,7 @@ const Layers = ({ timeline }: { timeline: gsap.core.Timeline }) => {
         },
         "halfway"
       )
+      // gridItems slide up
       .fromTo(
         gridItems,
         { y: () => Math.random() * 400 + 100 },
