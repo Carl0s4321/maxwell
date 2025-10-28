@@ -12,6 +12,10 @@ import img10 from "./maxwell/10.jpg";
 import meowl1 from "./meowl/1.jpg";
 import meowl2 from "./meowl/2.jpg";
 
+import disp from "./disp.webp";
+
+export { disp };
+
 export const maxwellImg = [
   img1,
   img2,
@@ -28,13 +32,13 @@ export const maxwellImg = [
 export const meowlImg = [meowl1, meowl2];
 
 export const imgSections = [
-  maxwellImg, 
-  maxwellImg, 
-  maxwellImg, 
-  maxwellImg, 
-  maxwellImg, 
-  maxwellImg, 
-  maxwellImg, 
-  maxwellImg, 
-  meowlImg
-]
+  maxwellImg,
+  maxwellImg,
+  maxwellImg,
+  maxwellImg,
+  maxwellImg,
+  maxwellImg,
+  maxwellImg,
+  maxwellImg,
+  meowlImg,
+];

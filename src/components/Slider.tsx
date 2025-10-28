@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useFBO } from "@react-three/drei";
 import vertexShader from "../shaders/vertex.glsl";
 import fragmentShader from "../shaders/fragment.glsl";
+import { disp } from "../assets/img";
 
 export function Slider({ imgSections }: { imgSections: any }) {
   const groupRef = useRef<THREE.Group>(null);
@@ -31,9 +32,16 @@ export function Slider({ imgSections }: { imgSections: any }) {
   // const materialQuad = new THREE.MeshBasicMaterial({});
   const materialQuad = new THREE.ShaderMaterial({
     side: THREE.DoubleSide,
-    uniforms: { uTexture: { value: null }, uTime: { value: 0 } },
+    uniforms: {
+      uTexture: { value: null },
+      uTime: { value: 0 },
+      uSpeed: { value: 0 },
+      uDir: { value: 0 },
+      uDisp: { value: new THREE.TextureLoader().load(disp) },
+    },
     vertexShader: vertexShader,
-    transparent: true,
+    // transparent: true,
+    // depthWrite: true,
     fragmentShader: fragmentShader,
   });
 
@@ -50,6 +58,12 @@ export function Slider({ imgSections }: { imgSections: any }) {
   backgroundQuad.position.z = -0.5;
   scene.add(backgroundQuad);
 
+  const spacing = 1.1;
+  const totalWidth = spacing * imgSections.length;
+
+  const offset = useRef(0);
+  const target = useRef(0);
+
   useFrame(() => {
     gl.autoClear = false;
     // render base scene
@@ -59,6 +73,10 @@ export function Slider({ imgSections }: { imgSections: any }) {
     // render distorted texture
     gl.setRenderTarget(renderTarget1);
     materialQuad.uniforms.uTexture.value = renderTarget.texture;
+    // set a speed limiter
+    materialQuad.uniforms.uSpeed.value = Math.min(0.3, Math.abs(offset.current.valueOf()));
+    materialQuad.uniforms.uDir.value = Math.sign(offset.current.valueOf());
+
     gl.render(sceneQuad, camera);
 
     gl.clearDepth();
@@ -68,14 +86,9 @@ export function Slider({ imgSections }: { imgSections: any }) {
     gl.render(scene, camera);
   });
 
-  const spacing = 1.1;
-  const totalWidth = spacing * imgSections.length;
-
-  const offset = useRef(0);
-  const target = useRef(0);
-
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      console.log(e)
       target.current += e.deltaY * 0.01;
     };
 
