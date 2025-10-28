@@ -16,9 +16,12 @@ const App = () => {
     <main className="intro">
       {/* <NavBar />
       <Hero /> */}
-      <Canvas camera={{ position: [0, 0, 0.25] }}>
-        <Slider imgSections={imgSections} />
-      </Canvas>
+      <div className="canvas-container">
+        <Canvas className="canvas-slider" camera={{ position: [0, 0, 1] }}>
+          <Slider imgSections={imgSections} />
+        </Canvas>
+
+      </div>
     </main>
   );
 };
