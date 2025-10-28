@@ -1,22 +1,78 @@
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useFBO } from "@react-three/drei";
+import vertexShader from "../shaders/vertex.glsl";
+import fragmentShader from "../shaders/fragment.glsl";
 
 export function Slider({ imgSections }: { imgSections: any }) {
   const groupRef = useRef<THREE.Group>(null);
-  const backGroupRef = useRef<THREE.Group>(null);
 
-  const geometry = useMemo(() => new THREE.PlaneGeometry(1, 1, 1, 1), []);
-  //   const material = useMemo(() =>
-  //   ), []);
+  var aspect = window.innerWidth / window.innerHeight;
 
-  const spacing = 1.5;
+  const geometry = useMemo(() => new THREE.PlaneGeometry(1, 1), []);
+
+  const { gl, camera, scene, size } = useThree();
+
+  console.log(camera);
+
+  let renderTarget = useFBO(size.width, size.height, {
+    format: THREE.RGBAFormat,
+    magFilter: THREE.NearestFilter,
+    minFilter: THREE.NearestFilter,
+  });
+  let renderTarget1 = useFBO(size.width, size.height, {
+    format: THREE.RGBAFormat,
+    magFilter: THREE.NearestFilter,
+    minFilter: THREE.NearestFilter,
+  });
+
+  const sceneQuad = new THREE.Scene();
+  // const materialQuad = new THREE.MeshBasicMaterial({});
+  const materialQuad = new THREE.ShaderMaterial({
+    side: THREE.DoubleSide,
+    uniforms: { uTexture: { value: null }, uTime: { value: 0 } },
+    vertexShader: vertexShader,
+    transparent: true,
+    fragmentShader: fragmentShader,
+  });
+
+  const quad = new THREE.Mesh(
+    new THREE.PlaneGeometry(3 * aspect, 3),
+    materialQuad
+  );
+  sceneQuad.add(quad);
+
+  const backgroundQuad = new THREE.Mesh(
+    new THREE.PlaneGeometry(3 * aspect, 3),
+    new THREE.MeshBasicMaterial({})
+  );
+  backgroundQuad.position.z = -0.5;
+  scene.add(backgroundQuad);
+
+  useFrame(() => {
+    gl.autoClear = false;
+    // render base scene
+    gl.setRenderTarget(renderTarget);
+    gl.render(scene, camera);
+
+    // render distorted texture
+    gl.setRenderTarget(renderTarget1);
+    materialQuad.uniforms.uTexture.value = renderTarget.texture;
+    gl.render(sceneQuad, camera);
+
+    gl.clearDepth();
+    // final scene
+    gl.setRenderTarget(null);
+    backgroundQuad.material.map = renderTarget1.texture;
+    gl.render(scene, camera);
+  });
+
+  const spacing = 1.1;
   const totalWidth = spacing * imgSections.length;
 
   const offset = useRef(0);
   const target = useRef(0);
-
-  const { gl } = useThree();
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
@@ -29,7 +85,7 @@ export function Slider({ imgSections }: { imgSections: any }) {
   }, [gl]);
 
   useFrame(() => {
-    if (!groupRef.current || !backGroupRef.current) return;
+    if (!groupRef.current) return;
 
     // lerp for smoothness * inertia not too much for more snappy
     offset.current += (target.current - offset.current) * 0.15;
@@ -37,35 +93,12 @@ export function Slider({ imgSections }: { imgSections: any }) {
     // ((offset.current % totalWidth) + totalWidth) makes sure the offset stays withing 0 and 2* totalWidth
     const loopX = (offset.current % totalWidth) + totalWidth;
     groupRef.current.position.x = -loopX;
-
-    backGroupRef.current.position.x = -loopX * 0.5;
-    backGroupRef.current.position.y = -2;
   });
 
   return (
     <>
-      <group ref={backGroupRef}>
-        {imgSections.map((section, i) => (
-          <group key={i}>
-            {[...Array(4)].map((_, j) => (
-              <mesh
-                key={j}
-                geometry={geometry}
-                position={[i * spacing, j * 1.5, -0.05]} // Y-stack + Z-depth
-              >
-                <meshBasicMaterial
-                  map={new THREE.TextureLoader().load(section.at(-1)!)}
-                  transparent
-                  opacity={1 - j * 0.2}
-                />
-              </mesh>
-            ))}
-          </group>
-        ))}
-      </group>
-
+      {/* duplicate the sections for loop */}
       <group ref={groupRef}>
-        {/* duplicate the sections for loop */}
         {[...imgSections, ...imgSections].map(
           (section: string[], i: number) => (
             <mesh
