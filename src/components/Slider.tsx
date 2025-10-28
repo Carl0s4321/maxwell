@@ -15,8 +15,6 @@ export function Slider({ imgSections }: { imgSections: any }) {
 
   const { gl, camera, scene, size } = useThree();
 
-  console.log(camera);
-
   let renderTarget = useFBO(size.width, size.height, {
     format: THREE.RGBAFormat,
     magFilter: THREE.NearestFilter,
@@ -58,11 +56,9 @@ export function Slider({ imgSections }: { imgSections: any }) {
   backgroundQuad.position.z = -0.5;
   scene.add(backgroundQuad);
 
-  const spacing = 1.1;
-  const totalWidth = spacing * imgSections.length;
-
-  const offset = useRef(0);
-  const target = useRef(0);
+  const scroll = useRef(0);
+  const scrollTarget = useRef(0);
+  const currScroll = useRef(0);
 
   useFrame(() => {
     gl.autoClear = false;
@@ -74,8 +70,11 @@ export function Slider({ imgSections }: { imgSections: any }) {
     gl.setRenderTarget(renderTarget1);
     materialQuad.uniforms.uTexture.value = renderTarget.texture;
     // set a speed limiter
-    materialQuad.uniforms.uSpeed.value = Math.min(0.3, Math.abs(offset.current.valueOf()));
-    materialQuad.uniforms.uDir.value = Math.sign(offset.current.valueOf());
+    materialQuad.uniforms.uSpeed.value = Math.min(
+      0.5,
+      Math.abs(scroll.current)
+    );
+    materialQuad.uniforms.uDir.value = Math.sign(scroll.current);
 
     gl.render(sceneQuad, camera);
 
@@ -88,8 +87,7 @@ export function Slider({ imgSections }: { imgSections: any }) {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      console.log(e)
-      target.current += e.deltaY * 0.01;
+      scrollTarget.current = e.deltaY * 0.5;
     };
 
     const dom = gl.domElement;
@@ -97,36 +95,45 @@ export function Slider({ imgSections }: { imgSections: any }) {
     return () => dom.removeEventListener("wheel", handleWheel);
   }, [gl]);
 
+  const margin = 1.1;
+  const wholeWidth = margin * imgSections.length;
+
   useFrame(() => {
     if (!groupRef.current) return;
 
-    // lerp for smoothness * inertia not too much for more snappy
-    offset.current += (target.current - offset.current) * 0.15;
+    scroll.current += (scrollTarget.current - scroll.current) * 0.15;
+    // friction
+    scroll.current *= 0.9;
+    // console.log(scroll.current)
 
-    // ((offset.current % totalWidth) + totalWidth) makes sure the offset stays withing 0 and 2* totalWidth
-    const loopX = (offset.current % totalWidth) + totalWidth;
-    groupRef.current.position.x = -loopX;
+    scrollTarget.current *= 0.9;
+
+    currScroll.current += scroll.current * 0.01;
+
+    // move each mesh inside the group
+    groupRef.current.children.forEach((mesh: any, i: number) => {
+      mesh.position.x =
+        ((margin * i + currScroll.current + 234567 * wholeWidth) % wholeWidth) -
+        3 * margin;
+    });
   });
 
   return (
     <>
-      {/* duplicate the sections for loop */}
       <group ref={groupRef}>
-        {[...imgSections, ...imgSections].map(
-          (section: string[], i: number) => (
-            <mesh
-              key={i}
-              geometry={geometry}
-              material={
-                new THREE.MeshBasicMaterial({
-                  // -1 cause main images i put at the end
-                  map: new THREE.TextureLoader().load(section.at(-1)!),
-                })
-              }
-              position={[i * spacing, 0, 0]}
-            />
-          )
-        )}
+        {imgSections.map((section: string[], i: number) => (
+          <mesh
+            key={i}
+            geometry={geometry}
+            material={
+              new THREE.MeshBasicMaterial({
+                // -1 cause main images i put at the end
+                map: new THREE.TextureLoader().load(section.at(-1)!),
+              })
+            }
+            position={[margin * i + currScroll.current, 0, 0]}
+          />
+        ))}
       </group>
     </>
   );
