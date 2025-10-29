@@ -6,7 +6,13 @@ import vertexShader from "../shaders/vertex.glsl";
 import fragmentShader from "../shaders/fragment.glsl";
 import { disp } from "../assets/img";
 
-export function Slider({ imgSections }: { imgSections: any }) {
+export function Slider({
+  imgSections,
+  tl,
+}: {
+  imgSections: any;
+  tl: () => void;
+}) {
   const groupRef = useRef<THREE.Group>(null);
 
   var aspect = window.innerWidth / window.innerHeight;
@@ -120,7 +126,7 @@ export function Slider({ imgSections }: { imgSections: any }) {
 
   return (
     <>
-      <group ref={groupRef}>
+      <group ref={groupRef} onClick={tl} >
         {imgSections.map((section: string[], i: number) => (
           <mesh
             key={i}

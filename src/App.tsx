@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import NavBar from "./components/NavBar";
 import Hero from "./components/Hero";
 
@@ -16,12 +16,14 @@ var fructumSize = 3;
 var aspect = window.innerWidth / window.innerHeight;
 
 const App = () => {
+
+  const tl = useRef<gsap.core.Timeline>(gsap.timeline({ paused: true }));
+
+
   return (
     <main className="intro">
-      {/* <NavBar />
-      <Hero /> */}
       <div className="canvas-container">
-        <Canvas gl={{antialias: true, alpha: true}} className="canvas-slider" >
+        <Canvas gl={{ antialias: true, alpha: true }} className="canvas-slider">
           <OrthographicCamera
             makeDefault
             position={[0, 0, 2]}
@@ -32,8 +34,12 @@ const App = () => {
             near={-1000}
             far={1000}
           />
-          <Slider imgSections={imgSections} />
+          <Slider imgSections={imgSections} tl={()=>tl.current.restart()} />
         </Canvas>
+      </div>
+      <NavBar />
+      <div style={{ pointerEvents: "none" }}>
+        <Hero tl={tl}/>
       </div>
     </main>
   );

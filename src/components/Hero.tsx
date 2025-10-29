@@ -12,7 +12,7 @@ const menus = [
   { title: "Ponsuke-kun the Seal", subtitle: "He's just a silly baby!" },
 ];
 
-function Menu({ onClick }: { onClick: () => void }) {
+function Menu() {
   const [selected, setSelected] = useState(1);
 
   return (
@@ -27,7 +27,6 @@ function Menu({ onClick }: { onClick: () => void }) {
             key={index}
             className={`menu__item ${isSelected ? "menu__item--current" : ""}`}
             data-index={"0" + index}
-            onClick={onClick}
           >
             <h2 className="menu__item-title">
               {isSelected ? menu.title : nonSelectedName}
@@ -40,16 +39,10 @@ function Menu({ onClick }: { onClick: () => void }) {
   );
 }
 
-const Hero = () => {
-  const tl = useRef<gsap.core.Timeline>(gsap.timeline({ paused: true }));
-
+const Hero = ({ tl }: { tl: React.RefObject<gsap.core.Timeline> }) => {
   const nPics = 6;
   const selectedIndexes = pickNNumbersFromRange(nPics, maxwellImg.length - 1);
-  console.log(selectedIndexes);
-
-  function handleClick() {
-    tl.current?.restart();
-  }
+  // console.log(selectedIndexes);
 
   let counter = 6;
 
@@ -69,7 +62,7 @@ const Hero = () => {
           );
         })}
       </div>
-      <Menu onClick={handleClick} />
+      <Menu />
 
       <Layers timeline={tl.current} />
     </div>

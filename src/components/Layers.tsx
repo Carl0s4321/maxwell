@@ -65,6 +65,24 @@ const Layers = ({ timeline }: { timeline: gsap.core.Timeline }) => {
         },
         "halfway"
       )
+      .to(
+        ".menu",
+        {
+          gridRowStart: 1,
+          gridColumnStart: 2,
+          gridRowEnd: 8,
+          gridColumnEnd: 7,
+          duration: 0,
+        },
+        "halfway"
+      )
+      .to(
+        ".canvas-container",
+        {
+          display: "none",
+        },
+        "halfway"
+      )
       // gridItems slide up
       .fromTo(
         gridItems,
